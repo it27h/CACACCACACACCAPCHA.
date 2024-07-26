@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captcha Verification</title>
+</head>
+<body>
+    <h1>Captcha Verification</h1>
+    <form id="captcha-form">
+        <div class="g-recaptcha" data-sitekey="your-site-key"></div>
+        <button type="submit">Submit</button>
+    </form>
+    
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script>
+        document.getElementById('captcha-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const response = grecaptcha.getResponse();
+            if (response.length === 0) {
+                alert('Please complete the captcha.');
+                return;
+            }
+
+            const res = await fetch('https://your-serverless-function-url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token: response })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert('Captcha verified successfully.');
+            } else {
+                alert('Captcha verification failed.');
+            }
+        });
+    </script>
+</body>
+</html>
